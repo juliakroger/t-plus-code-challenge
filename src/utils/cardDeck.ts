@@ -1,13 +1,12 @@
 export const CARD_TYPES = {
   HEART: "HEART",
-  DIAMONDS: "DIAMONDS",
-  CLUBS: "CLUBS",
-  SPADES: "SPADES",
+  DIAMOND: "DIAMOND",
+  CLUB: "CLUB",
+  SPADE: "SPADE",
 };
 
-export const CARD_VALUES = {
-  A: "A",
-  1: 1,
+export const CARD_POINTS = {
+  A: 1,
   2: 2,
   3: 3,
   4: 4,
@@ -17,7 +16,7 @@ export const CARD_VALUES = {
   8: 8,
   9: 9,
   10: 10,
-  J: "J",
-  Q: "Q",
-  K: "K",
+  J: 11,
+  Q: 12,
+  K: 13,
 };

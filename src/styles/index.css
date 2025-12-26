@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+  /* Backgrounds */
+  --color-base: #0e1b2a;
+  --color-surface: #16263a;
+  --color-panel: #1f3550;
+  --color-glow: #233d5f;
+
+  /* Text */
+  --color-text-primary: #e6edf5;
+  --color-text-secondary: #9fb3c8;
+  --color-text-disabled: #6b7f99;
+
+  /* Cards */
+  --color-card: #496793;
+  --color-card-dark: #263a5a;
+  --color-card-face: #f5f7fa;
+  --color-card-selected: #5fa8ff;
+  --color-card-selected-dark: #3f88d9;
+
+  --color-deck-card: #e45555;
+  --color--deck-card-dark: #b94343;
+}
+
 html {
-  background-color: #212121;
+  background-color: #0e1b2a;
+  font-family: "Poppins", sans-serif;
 }
