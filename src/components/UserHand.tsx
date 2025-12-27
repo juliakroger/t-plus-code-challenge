@@ -104,6 +104,10 @@ const UserHand = ({
           Next Round
         </button>
       </div>
+
+      <div className="hidden md:flex text-secondary border border-secondary rounded text-xs p-1 px-2">
+        Press Space to play cards
+      </div>
     </div>
   );
 };
