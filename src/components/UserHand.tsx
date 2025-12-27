@@ -1,5 +1,5 @@
 import type { CardProps } from "@/utils/cardDeck";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Card from "./Card";
 import { isValidPlay } from "@/utils/gameRules";
 import calculateScore from "@/utils/calculateScore";
@@ -34,6 +34,19 @@ const UserHand = ({
   const score = useMemo(() => {
     return calculateScore(userHand);
   }, [userHand]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        if (!isPlaying || !selectedCards.length) return;
+        handleNextRound(selectedCards.map((i) => userHand[i]));
+        setSelectedCards([]);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPlaying, handleNextRound, selectedCards, setSelectedCards, userHand]);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -79,7 +92,7 @@ const UserHand = ({
         )}
       </div>
 
-      <div className="flex p-4 flex justify-center gap-2">
+      <div className="flex p-4 flex justify-center gap-2 md:hidden">
         <button
           className="bg-blue-500 p-1.5 px-8 rounded-md text-white font-bold disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
           onClick={() => {
