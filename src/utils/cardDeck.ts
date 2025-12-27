@@ -1,9 +1,17 @@
+import shuffle from "./suffle";
+
 export const CARD_TYPES = {
   HEART: "HEART",
   DIAMOND: "DIAMOND",
   CLUB: "CLUB",
   SPADE: "SPADE",
 };
+
+export interface CardProps {
+  type: string;
+  value: string;
+  points: number;
+}
 
 export const CARD_POINTS = {
   A: 1,
@@ -19,4 +27,17 @@ export const CARD_POINTS = {
   J: 11,
   Q: 12,
   K: 13,
+};
+
+export const generateDeck = () => {
+  const deck: CardProps[] = [];
+
+  Object.values(CARD_TYPES).forEach((type) => {
+    Object.keys(CARD_POINTS).forEach((value) => {
+      const cardPoints = CARD_POINTS[value as keyof typeof CARD_POINTS] || 0;
+      deck.push({ type, value, points: cardPoints });
+    });
+  });
+
+  return shuffle(deck);
 };

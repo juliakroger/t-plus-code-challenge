@@ -29,7 +29,7 @@ const Card = ({
         isSelected
           ? "bg-linear-to-bl from-card-selected to-card-selected-dark border border-card-selected-dark scale-105"
           : "bg-linear-to-bl from-card to-card-dark border border-card-dark",
-        "disabled:opacity-50"
+        "disabled:opacity-70"
       )}
     >
       <CardSymbolIcon type={type} />

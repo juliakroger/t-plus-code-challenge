@@ -2,12 +2,16 @@ import { useState } from "react";
 import Game from "@/pages/Game";
 
 const Home = () => {
-  const [gameStarted, setGameStarted] = useState(false);
+  const [gameStarted, setGameStarted] = useState(true);
+
+  const handleGameEnd = () => {
+    setGameStarted(false);
+  };
 
   return (
-    <div className=" flex flex-col items-center p-8">
+    <div className="h-lvh flex flex-col items-center p-8">
       {gameStarted ? (
-        <Game />
+        <Game onGameEnd={handleGameEnd} />
       ) : (
         <div className="flex flex-col gap-4">
           <div className="p-4 border rounded text-white bg-surface border border-glow">

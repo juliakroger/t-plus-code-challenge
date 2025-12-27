@@ -28,6 +28,7 @@
       "@/components/*": ["./components/*"],
       "@/icons/*": ["./icons/*"],
       "@/pages/*": ["./pages/*"],
+      "@/state/*": ["./state/*"],
       "@/styles/*": ["./styles/*"],
       "@/utils/*": ["./utils/*"]
     }
