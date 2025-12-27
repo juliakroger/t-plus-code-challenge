@@ -1,5 +1,6 @@
 import { createMachine, assign } from "xstate";
 import { generateDeck, type CardProps } from "@/utils/cardDeck";
+import { getValidCards } from "@/utils/gameRules";
 
 export interface Player {
   id: string;
@@ -14,7 +15,6 @@ export interface GameContext {
   timeLeft: number;
   currentPlayer: "user" | "opponent";
   round: number;
-  userDrawThisRound: boolean;
 }
 
 export type GameEvent =
@@ -25,8 +25,7 @@ export type GameEvent =
   | { type: "USER_DRAW" };
 
 const INITIAL_DRAW_AMOUNT = 5;
-// const ROUND_TIME_SECONDS = 180;
-const ROUND_TIME_SECONDS = 3600;
+const ROUND_TIME_SECONDS = 180;
 
 export const gameMachine = createMachine<GameContext, GameEvent>(
   {
@@ -40,7 +39,6 @@ export const gameMachine = createMachine<GameContext, GameEvent>(
       timeLeft: ROUND_TIME_SECONDS,
       currentPlayer: "user",
       round: 1,
-      userDrawThisRound: false,
     },
     states: {
       idle: {
@@ -53,16 +51,23 @@ export const gameMachine = createMachine<GameContext, GameEvent>(
       },
       ready: {
         on: {
-          TICK: [
-            {
-              actions: "decrementTimer",
-            },
-          ],
+          TICK: { actions: "decrementTimer" },
           USER_DRAW: {
+            target: "opponentTurn",
             actions: "userDrawCard",
           },
           USER_PLAY: {
+            target: "opponentTurn",
             actions: "userPlayCards",
+          },
+        },
+      },
+      opponentTurn: {
+        entry: "opponentPlay",
+        after: {
+          2000: {
+            target: "ready",
+            actions: "endOpponentTurn",
           },
         },
       },
@@ -71,6 +76,7 @@ export const gameMachine = createMachine<GameContext, GameEvent>(
   {
     actions: {
       setupGame: assign(({ context }) => {
+        console.log("SETUP GAME");
         const deck = generateDeck();
         const userHand: CardProps[] = [];
         const opponentHand: CardProps[] = [];
@@ -97,18 +103,22 @@ export const gameMachine = createMachine<GameContext, GameEvent>(
         timeLeft: ({ context }) => context.timeLeft - 1,
       }),
       userDrawCard: assign(({ context }) => {
-        console.log("DRAWING CARD", context);
         if (!context.deck.length) return {};
 
         const [card, ...rest] = context.deck;
 
+        console.log("USER DRAW CARD", card);
+
         return {
+          round: context.round + 1,
+          currentPlayer: "opponent",
           deck: rest,
           userHand: [...context.userHand, card],
-          userDrawThisRound: true,
         };
       }),
       userPlayCards: assign(({ context, event }) => {
+        console.log("USER PLAY CARD", event.cards);
+
         if (!event.cards) {
           return {
             round: context.round + 1,
@@ -132,6 +142,41 @@ export const gameMachine = createMachine<GameContext, GameEvent>(
           discardPile: [...event.cards, ...context.discardPile],
         };
       }),
+      opponentPlay: assign(({ context }) => {
+        const topCard = context.discardPile[0];
+        const validCards = getValidCards(context.opponentHand, topCard);
+
+        if (validCards.length) {
+          console.log("OPPONENT PLAY CARD", validCards);
+
+          const updatedOponentHand = context.opponentHand.filter(
+            (userCard) =>
+              !validCards.some(
+                (selectedCard) =>
+                  userCard.type === selectedCard.type &&
+                  userCard.value === selectedCard.value
+              )
+          );
+
+          return {
+            opponentHand: updatedOponentHand,
+            discardPile: [...validCards, ...context.discardPile],
+          };
+        } else {
+          const [card, ...rest] = context.deck;
+
+          console.log("OPPONENT DRAW CARD", card);
+
+          return {
+            opponentHand: [...context.opponentHand, card],
+            deck: rest,
+          };
+        }
+      }),
+      endOpponentTurn: assign(({ context }) => ({
+        currentPlayer: "user",
+        round: context.round + 1,
+      })),
     },
   }
 );

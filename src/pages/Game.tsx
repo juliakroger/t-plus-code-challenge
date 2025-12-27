@@ -7,15 +7,15 @@ import GameHeader from "@/components/GameHeader";
 import OponentHand from "@/components/OponentHand";
 import UserHand from "@/components/UserHand";
 import type { CardProps } from "@/utils/cardDeck";
+import calculateScore from "@/utils/calculateScore";
 
 interface Props {
-  onGameEnd: (score: number) => void;
+  onGameEnd: (userScore: number, opponentScore: number) => void;
 }
 
 const Game = ({ onGameEnd }: Props) => {
   const [state, send] = useMachine(gameMachine);
   const {
-    userDrawThisRound,
     currentPlayer,
     round,
     timeLeft,
@@ -40,7 +40,12 @@ const Game = ({ onGameEnd }: Props) => {
   }, [state, send]);
 
   useEffect(() => {
-    if (timeLeft <= 0) onGameEnd(0);
+    if (timeLeft <= 0) {
+      const userPoints = calculateScore(userHand);
+      const opponentPoints = calculateScore(opponentHand);
+
+      onGameEnd(userPoints, opponentPoints);
+    }
     // TODO: open a modal with score if user won or not
   }, [timeLeft, onGameEnd]);
 
@@ -66,9 +71,7 @@ const Game = ({ onGameEnd }: Props) => {
         <div className="flex gap-8">
           <button
             onClick={onDrawCard}
-            disabled={
-              currentPlayer !== "user" || !deck.length || userDrawThisRound
-            }
+            disabled={currentPlayer !== "user" || !deck.length}
             className="w-22 h-34 p-2.5 rounded bg-deck-card flex items-center justify-center disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
           >
             <Plus />
@@ -88,7 +91,6 @@ const Game = ({ onGameEnd }: Props) => {
         <UserHand
           userHand={userHand}
           isPlaying={currentPlayer === "user"}
-          userDrawThisRound={userDrawThisRound}
           handleNextRound={handleNextRound}
           topCardDiscarded={discardPile[0]}
         />

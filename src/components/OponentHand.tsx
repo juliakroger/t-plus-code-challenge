@@ -1,3 +1,4 @@
+import calculateScore from "@/utils/calculateScore";
 import type { CardProps } from "@/utils/cardDeck";
 import { useMemo } from "react";
 
@@ -8,11 +9,7 @@ interface Props {
 
 const OponentHand = ({ opponentHand, isPlaying }: Props) => {
   const score = useMemo(() => {
-    const totalPoints = opponentHand.reduce(
-      (sum, card) => sum + card.points,
-      0
-    );
-    return totalPoints || 0;
+    return calculateScore(opponentHand);
   }, [opponentHand]);
 
   return (

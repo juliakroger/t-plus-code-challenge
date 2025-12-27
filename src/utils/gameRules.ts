@@ -1,7 +1,7 @@
 import type { CardProps } from "@/utils/cardDeck";
 
 export function isValidPlay(card: CardProps, topCard: CardProps): boolean {
-  return card.value === topCard.value || card.points + 1 === topCard.points;
+  return card.points === topCard.points || card.points === topCard.points + 1;
 }
 
 export function getValidCards(

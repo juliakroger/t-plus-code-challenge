@@ -2,11 +2,11 @@ import type { CardProps } from "@/utils/cardDeck";
 import { useMemo, useState } from "react";
 import Card from "./Card";
 import { isValidPlay } from "@/utils/gameRules";
+import calculateScore from "@/utils/calculateScore";
 
 interface Props {
   userHand: CardProps[];
   isPlaying: boolean;
-  userDrawThisRound: boolean;
   handleNextRound: (selectedCards?: CardProps[]) => void;
   topCardDiscarded: CardProps;
 }
@@ -14,7 +14,6 @@ interface Props {
 const UserHand = ({
   userHand,
   isPlaying,
-  userDrawThisRound,
   handleNextRound,
   topCardDiscarded,
 }: Props) => {
@@ -33,8 +32,7 @@ const UserHand = ({
   };
 
   const score = useMemo(() => {
-    const totalPoints = userHand.reduce((sum, card) => sum + card.points, 0);
-    return totalPoints || 0;
+    return calculateScore(userHand);
   }, [userHand]);
 
   return (
@@ -62,16 +60,20 @@ const UserHand = ({
 
       <div className="flex justify-center gap-3">
         {userHand.length ? (
-          userHand.map((card, index) => (
-            <Card
-              key={`card-${card.type}-${card.value}-${index}`}
-              onClick={() => handleCardClick(index)}
-              type={card.type}
-              value={card.value}
-              isSelected={selectedCards.includes(index)}
-              isDisabled={!isPlaying || !isValidPlay(card, topCardDiscarded)}
-            />
-          ))
+          userHand.map((card, index) => {
+            const isValid = isValidPlay(card, topCardDiscarded);
+
+            return (
+              <Card
+                key={`card-${card.type}-${card.value}-${index}`}
+                onClick={() => handleCardClick(index)}
+                type={card.type}
+                value={card.value}
+                isSelected={selectedCards.includes(index)}
+                isDisabled={!isPlaying || !isValid}
+              />
+            );
+          })
         ) : (
           <div className="w-22 h-34 p-2.5 rounded bg-surface border border-glow border-dashed" />
         )}
@@ -84,9 +86,7 @@ const UserHand = ({
             handleNextRound(selectedCards.map((i) => userHand[i]));
             setSelectedCards([]);
           }}
-          disabled={
-            !isPlaying || (!userDrawThisRound && selectedCards.length === 0)
-          }
+          disabled={!isPlaying || selectedCards.length === 0}
         >
           Next Round
         </button>

@@ -1,12 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Game from "@/pages/Game";
 
 const Home = () => {
-  const [gameStarted, setGameStarted] = useState(true);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameResults, setGameResults] = useState<GameResult[]>([]);
 
-  const handleGameEnd = () => {
+  const handleGameEnd = (userScore: number, opponentScore: number) => {
     setGameStarted(false);
+
+    const gameResult = {
+      userScore,
+      opponentScore,
+      date: new Date().toISOString(),
+    };
+
+    const previousResults = JSON.parse(
+      localStorage.getItem("gameResults") || "[]"
+    );
+
+    const updatedResults = [...previousResults, gameResult];
+
+    setGameResults(updatedResults);
+    localStorage.setItem("gameResults", JSON.stringify(updatedResults));
   };
+
+  useEffect(() => {
+    const storedResults = JSON.parse(
+      localStorage.getItem("gameResults") || "[]"
+    );
+    setGameResults(storedResults);
+  }, []);
 
   return (
     <div className="h-lvh flex flex-col items-center p-8">
@@ -38,6 +61,41 @@ const Home = () => {
           >
             Start Game
           </button>
+
+          {gameResults.length > 0 && (
+            <div className="mt-6 p-4 bg-surface border border-glow rounded">
+              <h2 className="font-bold mb-6 text-white">Past Game Results</h2>
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="text-white border-b border-panel">
+                    <th className="p-2"></th>
+                    <th className="p-2">Date</th>
+                    <th className="p-2">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gameResults.map((result, index) => (
+                    <tr key={index} className="text-white">
+                      <td className="p-2">
+                        {result.userScore < result.opponentScore ? (
+                          <span className="text-green-500 font-bold">WON</span>
+                        ) : (
+                          <span className="text-red-500">LOST</span>
+                        )}
+                      </td>
+
+                      <td className="p-2">
+                        {new Date(result.date).toLocaleString()}
+                      </td>
+                      <td className="p-2">
+                        {result.userScore} v. {result.opponentScore}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>
