@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+You are designing the state machine architecture for a turn based card game system.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Game Mechanics
 
-## React Compiler
+Achieve the lowest total hand value or dispose of all your cards before the 3-minute round timer expires.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Scoring System
 
-## Expanding the ESLint configuration
+- Ace = 1 point
+- Number cards (2-10) = Face value
+- Jack = 11 points
+- Queen = 12 points
+- King = 13 points
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Turn-based Play
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Players alternate placing cards on shared discard pile. You can only play cards that:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Have the same value as top discard card (7 on 7, Queen on Queen)**
+- **Are in ascending sequence (8 on 7, Jack on 10, Ace on King)**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+_If you cannnot play a match you have to take another from the deck_, **multiple matches can be played at once**.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Controls
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Single Card Play: Auto-play when only one valid card exists or have to pick up from the deck.
+Multiple Card Selection: When multiple valid cards are available:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Click cards to select/deselect them
+- SPACE key to play all selected cards as together
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) installed
+- [Yarn](https://yarnpkg.com/) installed
+
+## How to Run
+
+```bash
+yarn
+yarn dev
 ```
