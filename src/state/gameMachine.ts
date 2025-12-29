@@ -17,18 +17,19 @@ export interface GameContext {
   round: number;
 }
 
-export type GameEvent =
-  | { type: "START" }
-  | { type: "TICK" }
-  | { type: "TIME_UP" }
-  | { type: "USER_PLAY"; cards?: CardProps[] }
-  | { type: "USER_DRAW" };
+type GameEventTypes = "START" | "TICK" | "USER_PLAY" | "USER_DRAW";
+
+export type GameEvent = { type: GameEventTypes; cards?: CardProps[] };
 
 const INITIAL_DRAW_AMOUNT = 5;
 const ROUND_TIME_SECONDS = 180;
 
-export const gameMachine = createMachine<GameContext, GameEvent>(
+export const gameMachine = createMachine(
   {
+    types: {} as {
+      context: GameContext;
+      events: GameEvent;
+    },
     id: "game",
     initial: "idle",
     context: {
@@ -119,10 +120,22 @@ export const gameMachine = createMachine<GameContext, GameEvent>(
       userPlayCards: assign(({ context, event }) => {
         console.log("USER PLAY CARD", event.cards);
 
-        if (!event.cards) {
+        if (!event.cards || event.cards.length === 0) {
+          if (!context.deck.length) {
+            return {
+              round: context.round + 1,
+              currentPlayer: "opponent",
+            };
+          }
+
+          const [card, ...rest] = context.deck;
+          console.log("USER AUTO-DRAW CARD", card);
+
           return {
             round: context.round + 1,
             currentPlayer: "opponent",
+            deck: rest,
+            userHand: [...context.userHand, card],
           };
         }
 

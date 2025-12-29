@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import Game from "@/pages/Game";
 
+interface GameResult {
+  userScore: number;
+  opponentScore: number;
+  date: string;
+}
+
 const Home = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameResults, setGameResults] = useState<GameResult[]>([]);
