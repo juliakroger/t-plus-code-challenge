@@ -8,6 +8,7 @@ import OponentHand from "@/components/OponentHand";
 import UserHand from "@/components/UserHand";
 import type { CardProps } from "@/utils/cardDeck";
 import calculateScore from "@/utils/calculateScore";
+import { getValidCards } from "@/utils/gameRules";
 
 interface Props {
   onGameEnd: (userScore: number, opponentScore: number) => void;
@@ -30,27 +31,36 @@ const Game = ({ onGameEnd }: Props) => {
   }, [send]);
 
   useEffect(() => {
-    if (state.matches("ready")) {
-      const interval = setInterval(() => {
-        send({ type: "TICK" });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [state, send]);
+    const interval = setInterval(() => send({ type: "TICK" }), 1000);
+    return () => clearInterval(interval);
+  }, [send]);
 
   useEffect(() => {
-    if (timeLeft <= 0) {
-      const userPoints = calculateScore(userHand);
-      const opponentPoints = calculateScore(opponentHand);
+    if (state.matches("ready")) {
+      const emptyHand = userHand.length === 0 || opponentHand.length === 0;
+      const deckEndedAndNoValidCards =
+        !deck.length &&
+        getValidCards(userHand, discardPile[0]).length === 0 &&
+        getValidCards(opponentHand, discardPile[0]).length === 0;
 
-      onGameEnd(userPoints, opponentPoints);
+      if (timeLeft <= 0 || emptyHand || deckEndedAndNoValidCards) {
+        const userPoints = calculateScore(userHand);
+        const opponentPoints = calculateScore(opponentHand);
+        onGameEnd(userPoints, opponentPoints);
+      }
     }
-    // TODO: open a modal with score if user won or not
-  }, [timeLeft, onGameEnd]);
+  }, [
+    state,
+    timeLeft,
+    userHand,
+    opponentHand,
+    onGameEnd,
+    deck.length,
+    discardPile,
+  ]);
 
   const onDrawCard = () => {
-    // if (currentPlayer !== "user" || deck.length === 0) return;
+    if (currentPlayer !== "user" || deck.length === 0) return;
     send({ type: "USER_DRAW" });
   };
 

@@ -1,7 +1,7 @@
 import type { CardProps } from "@/utils/cardDeck";
 import { useEffect, useMemo, useState } from "react";
 import Card from "./Card";
-import { isValidPlay } from "@/utils/gameRules";
+import { getValidCardsIndexes, isValidPlay } from "@/utils/gameRules";
 import calculateScore from "@/utils/calculateScore";
 
 interface Props {
@@ -36,10 +36,7 @@ const UserHand = ({
   }, [userHand]);
 
   const validCardsIndexes = useMemo(() => {
-    return userHand
-      .map((card, index) => ({ card, index }))
-      .filter(({ card }) => isValidPlay(card, topCardDiscarded))
-      .map(({ index }) => index);
+    return getValidCardsIndexes(userHand, topCardDiscarded);
   }, [userHand, topCardDiscarded]);
 
   useEffect(() => {

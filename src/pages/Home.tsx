@@ -12,6 +12,10 @@ const Home = () => {
   const [gameResults, setGameResults] = useState<GameResult[]>([]);
 
   const handleGameEnd = (userScore: number, opponentScore: number) => {
+    console.log("scores", userScore, opponentScore);
+    // TODO: open a modal with score if user won or not
+    alert(`Game ended, you ${userScore < opponentScore ? "WON" : "LOST"}`);
+
     setGameStarted(false);
 
     const gameResult = {
