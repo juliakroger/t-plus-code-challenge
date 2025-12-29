@@ -7,9 +7,21 @@ interface Props {
   isPlaying: boolean;
 }
 
+const MAX_VISIBLE = 5;
+
 const OponentHand = ({ opponentHand, isPlaying }: Props) => {
   const score = useMemo(() => {
     return calculateScore(opponentHand);
+  }, [opponentHand]);
+
+  const { visibleCards, remainingAmount } = useMemo(() => {
+    return {
+      visibleCards: opponentHand.slice(0, MAX_VISIBLE),
+      remainingAmount:
+        opponentHand.length > MAX_VISIBLE
+          ? opponentHand.length - MAX_VISIBLE
+          : 0,
+    };
   }, [opponentHand]);
 
   return (
@@ -36,12 +48,18 @@ const OponentHand = ({ opponentHand, isPlaying }: Props) => {
       <div className="text-xs">Player 2</div>
 
       <div className="flex gap-2">
-        {opponentHand.map((_, index) => (
+        {visibleCards.map((_, index) => (
           <button
             key={`oponent-card-${index}`}
             className="w-10 h-16 p-2.5 rounded flex flex-col justify-between bg-linear-to-bl from-card to-card-dark border border-card-dark"
           ></button>
         ))}
+
+        {remainingAmount ? (
+          <div className="w-10 h-16 p-2.5 rounded flex flex-col items-center justify-center bg-linear-to-bl from-card to-card-dark border border-card-dark">
+            +{remainingAmount}
+          </div>
+        ) : null}
       </div>
     </div>
   );

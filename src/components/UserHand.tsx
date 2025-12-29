@@ -101,25 +101,27 @@ const UserHand = ({
 
       <div className="text-xs">Player 1</div>
 
-      <div className="flex justify-center gap-3">
-        {userHand.length ? (
-          userHand.map((card, index) => {
-            const isValid = isValidPlay(card, topCardDiscarded);
+      <div className="max-w-[900px] overflow-x-auto pb-2 px-2">
+        <div className="flex justify-center gap-3 min-w-min">
+          {userHand.length ? (
+            userHand.map((card, index) => {
+              const isValid = isValidPlay(card, topCardDiscarded);
 
-            return (
-              <Card
-                key={`card-${card.type}-${card.value}-${index}`}
-                onClick={() => handleCardClick(index)}
-                type={card.type}
-                value={card.value}
-                isSelected={selectedCards.includes(index)}
-                isDisabled={!isPlaying || !isValid}
-              />
-            );
-          })
-        ) : (
-          <div className="w-22 h-34 p-2.5 rounded bg-surface border border-glow border-dashed" />
-        )}
+              return (
+                <Card
+                  key={`card-${card.type}-${card.value}-${index}`}
+                  onClick={() => handleCardClick(index)}
+                  type={card.type}
+                  value={card.value}
+                  isSelected={selectedCards.includes(index)}
+                  isDisabled={!isPlaying || !isValid}
+                />
+              );
+            })
+          ) : (
+            <div className="w-22 h-34 p-2.5 rounded bg-surface border border-glow border-dashed" />
+          )}
+        </div>
       </div>
 
       <div className="flex p-4 flex justify-center gap-2 md:hidden">
