@@ -39,12 +39,17 @@ const Home = () => {
         <div className="flex flex-col gap-4">
           <div className="p-4 border rounded text-white bg-surface border border-glow">
             <div className="text-center text-lg font-bold mb-4">Game Rules</div>
-
             <div>
               Achieve the lowest total hand value or dispose of all your cards
               before the 3-minute round timer expires.
             </div>
-
+            <div className="mt-4 font-bold">Valid Cards</div>
+            <div>
+              Have the same value as top discard card (7 on 7, Queen on Queen)
+            </div>
+            <div>
+              Are in ascending sequence (8 on 7, Jack on 10, Ace on King)
+            </div>
             <div className="mt-4 font-bold">Scoring System</div>
             <ul className="list-disc px-6">
               <li>Ace = 1 point</li>

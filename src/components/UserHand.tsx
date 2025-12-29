@@ -35,6 +35,35 @@ const UserHand = ({
     return calculateScore(userHand);
   }, [userHand]);
 
+  const validCardsIndexes = useMemo(() => {
+    return userHand
+      .map((card, index) => ({ card, index }))
+      .filter(({ card }) => isValidPlay(card, topCardDiscarded))
+      .map(({ index }) => index);
+  }, [userHand, topCardDiscarded]);
+
+  useEffect(() => {
+    if (isPlaying && validCardsIndexes.length === 1) {
+      const autoPlayTimer = setTimeout(() => {
+        const cardToPlay = userHand[validCardsIndexes[0]];
+        handleNextRound([cardToPlay]);
+        setSelectedCards([]);
+      }, 300);
+
+      return () => clearTimeout(autoPlayTimer);
+    }
+  }, [isPlaying, validCardsIndexes, userHand, handleNextRound]);
+
+  useEffect(() => {
+    if (isPlaying && validCardsIndexes.length === 0 && userHand.length > 0) {
+      const autoDrawTimer = setTimeout(() => {
+        handleNextRound();
+      }, 800);
+
+      return () => clearTimeout(autoDrawTimer);
+    }
+  }, [isPlaying, validCardsIndexes, userHand.length, handleNextRound]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -46,13 +75,17 @@ const UserHand = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPlaying, handleNextRound, selectedCards, setSelectedCards, userHand]);
+  }, [isPlaying, handleNextRound, selectedCards, userHand]);
 
   return (
     <div className="flex flex-col items-center gap-3">
       {isPlaying && (
         <div className="relative text-xs border p-1 px-2 bg-white rounded text-black mb-3">
-          Your turn...
+          {validCardsIndexes.length === 0
+            ? "Drawing card..."
+            : validCardsIndexes.length === 1
+            ? "Auto-playing..."
+            : "Your turn..."}
           <span className="w-3 h-3 absolute -top-1 -right-1.5 ml-1 bg-green-500 px-1 rounded-full animate-ping"></span>
           <span className="w-3 h-3 absolute -top-1 -right-1.5 ml-1 bg-green-500 px-1 rounded-full"></span>
         </div>
